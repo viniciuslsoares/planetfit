@@ -7,6 +7,7 @@ import streamlit as st
 URL_TACO = "https://raw.githubusercontent.com/machine-learning-mocha/taco/main/formatados/alimentos.csv"
 DATA_DIR = "data"
 PATH_TACO = os.path.join(DATA_DIR, "taco.csv")
+PATH_CUSTOM = "data/custom_foods.csv"
 
 
 def baixar_taco():
@@ -79,3 +80,27 @@ def carregar_dados() -> pd.DataFrame | None:
         df_bruto = pd.read_csv(PATH_TACO)
         df_limpo = limpar_tabela(df_bruto)
         return df_limpo
+
+
+def carregar_custom_foods():
+    if os.path.exists(PATH_CUSTOM):
+        return pd.read_csv(PATH_CUSTOM)
+    # Se não existir, retorna um DataFrame vazio com as colunas corretas
+    return pd.DataFrame(
+        columns=[
+            "alimento",
+            "kcal",
+            "prot",
+            "lip",
+            "carb",
+            "fibra",
+            "colesterol",
+            "sodio",
+            "ferro",
+        ]
+    )
+
+
+def salvar_custom_foods(df):
+    os.makedirs("data", exist_ok=True)
+    df.to_csv(PATH_CUSTOM, index=False)
