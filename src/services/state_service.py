@@ -15,7 +15,7 @@ def init_session_state():
                 "idade": 22,
                 "sexo": "Masculino",
                 "atividade": "Levemente Ativo",
-                "objetivo": "Cutting Leve"
+                "objetivo": "Cutting Leve",
             },
             "cardapio": [],
         }

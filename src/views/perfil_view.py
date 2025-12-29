@@ -1,5 +1,9 @@
 import streamlit as st
-from src.services.nutri_calculos import calcular_tmb, calcular_get
+from src.services.nutri_calculos import (
+    calcular_tmb,
+    calcular_get,
+    calcular_macros_por_gkg,
+)
 
 
 def render_perfil():
@@ -34,15 +38,15 @@ def render_perfil():
     col_atv, col_obj = st.columns(2)
     lista_atividades = list(niveis_atividade.keys())
     try:
-        index_atv = lista_atividades.index(st.session_state.dieta["perfil"]["atividade"])
+        index_atv = lista_atividades.index(
+            st.session_state.dieta["perfil"]["atividade"]
+        )
     except ValueError:
         index_atv = 2
 
     with col_atv:
         atividade = st.selectbox(
-            "Nível de Atividade", 
-            options=lista_atividades,
-            index=index_atv
+            "Nível de Atividade", options=lista_atividades, index=index_atv
         )
 
     dict_objetivos = {
@@ -50,10 +54,10 @@ def render_perfil():
         "Cutting Leve": -350,
         "Manutenção": 0,
         "Bulking Limpo": 350,
-        "Bulking Sujo": 500
+        "Bulking Sujo": 500,
     }
     lista_objetivos = list(dict_objetivos.keys())
-        
+
     objetivo_salvo = st.session_state.dieta["perfil"].get("objetivo", "Manutenção")
     try:
         index_obj = lista_objetivos.index(objetivo_salvo)
@@ -61,11 +65,7 @@ def render_perfil():
         index_obj = 2
 
     with col_obj:
-        objetivo = st.selectbox(
-            "Objetivo",
-            options=lista_objetivos,
-            index=index_obj
-        )
+        objetivo = st.selectbox("Objetivo", options=lista_objetivos, index=index_obj)
 
     if st.button("🚀 Calcular Metas Diárias", use_container_width=True):
         tmb = calcular_tmb(peso, altura, idade, sexo)
@@ -74,15 +74,17 @@ def render_perfil():
         ajuste = dict_objetivos.get(objetivo, 0)
         calorias_alvo = get + ajuste
 
-        st.session_state.dieta["perfil"].update({
-            "peso": peso,
-            "altura": altura,
-            "idade": idade,
-            "sexo": sexo,
-            "atividade": atividade,
-            "objetivo": objetivo 
-        })
-        
+        st.session_state.dieta["perfil"].update(
+            {
+                "peso": peso,
+                "altura": altura,
+                "idade": idade,
+                "sexo": sexo,
+                "atividade": atividade,
+                "objetivo": objetivo,
+            }
+        )
+
         st.session_state.dieta["macros_alvo"]["kcal"] = calorias_alvo
 
         st.session_state["calculo_realizado"] = {
@@ -112,3 +114,49 @@ def render_perfil():
                     </div>""",
                     unsafe_allow_html=True,
                 )
+
+    if "calculo_realizado" in st.session_state:
+        res = st.session_state["calculo_realizado"]
+        peso_atual = st.session_state.dieta["perfil"]["peso"]
+
+        st.subheader("🥪 Ajuste de Macronutrientes")
+        st.info(
+            "Defina a quantidade de Proteína e Gordura por quilo. O Carboidrato preencherá o restante das calorias."
+        )
+
+        col_p, col_g = st.columns(2)
+        with col_p:
+            g_kg_prot = st.slider("Proteína (g/kg)", 1.0, 3.0, 2.0, 0.1)
+        with col_g:
+            g_kg_fat = st.slider("Gordura (g/kg)", 0.5, 1.5, 1.0, 0.1)
+
+        # Cálculo em tempo real
+        macros = calcular_macros_por_gkg(peso_atual, res["alvo"], g_kg_prot, g_kg_fat)
+
+        # Exibição dos Macros
+        st.divider()
+        m1, m2, m3 = st.columns(3)
+        m1.metric(
+            "Proteína",
+            f"{macros['proteina']['g']:.0f}g",
+            f"{macros['proteina']['kcal']:.0f} kcal",
+        )
+        m2.metric(
+            "Gordura",
+            f"{macros['gordura']['g']:.0f}g",
+            f"{macros['gordura']['kcal']:.0f} kcal",
+        )
+        m3.metric(
+            "Carboidrato",
+            f"{macros['carboidrato']['g']:.0f}g",
+            f"{macros['carboidrato']['kcal']:.0f} kcal",
+        )
+
+        # Salva no estado para o cardápio usar
+        st.session_state.dieta["macros_alvo"].update(
+            {
+                "prot": macros["proteina"]["g"],
+                "fat": macros["gordura"]["g"],
+                "carb": macros["carboidrato"]["g"],
+            }
+        )
