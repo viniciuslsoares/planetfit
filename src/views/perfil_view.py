@@ -1,5 +1,5 @@
 import streamlit as st
-from src.services.nutri_calculos import calcular_tmb, calcular_get
+from src.services.nutri_calculos import calcular_tmb, calcular_get, calcular_macros_por_gkg
 
 
 def render_perfil():
@@ -112,3 +112,33 @@ def render_perfil():
                     </div>""",
                     unsafe_allow_html=True,
                 )
+                
+    if "calculo_realizado" in st.session_state:
+        res = st.session_state["calculo_realizado"]
+        peso_atual = st.session_state.dieta['perfil']['peso']
+
+        st.subheader("🥪 Ajuste de Macronutrientes")
+        st.info("Defina a quantidade de Proteína e Gordura por quilo. O Carboidrato preencherá o restante das calorias.")
+
+        col_p, col_g = st.columns(2)
+        with col_p:
+            g_kg_prot = st.slider("Proteína (g/kg)", 1.0, 3.0, 2.0, 0.1)
+        with col_g:
+            g_kg_fat = st.slider("Gordura (g/kg)", 0.5, 1.5, 1.0, 0.1)
+
+        # Cálculo em tempo real
+        macros = calcular_macros_por_gkg(peso_atual, res['alvo'], g_kg_prot, g_kg_fat)
+
+        # Exibição dos Macros
+        st.divider()
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Proteína", f"{macros['proteina']['g']:.0f}g", f"{macros['proteina']['kcal']:.0f} kcal")
+        m2.metric("Gordura", f"{macros['gordura']['g']:.0f}g", f"{macros['gordura']['kcal']:.0f} kcal")
+        m3.metric("Carboidrato", f"{macros['carboidrato']['g']:.0f}g", f"{macros['carboidrato']['kcal']:.0f} kcal")
+
+        # Salva no estado para o cardápio usar
+        st.session_state.dieta['macros_alvo'].update({
+            "prot": macros['proteina']['g'],
+            "fat": macros['gordura']['g'],
+            "carb": macros['carboidrato']['g']
+        })
