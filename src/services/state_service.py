@@ -10,11 +10,12 @@ def init_session_state():
         st.session_state.dieta = {
             "macros_alvo": {"kcal": 0.0, "prot": 0.0, "carb": 0.0, "fat": 0.0},
             "perfil": {
-                "peso": 70.0,
-                "altura": 170.0,
-                "idade": 25,
+                "peso": 92.0,
+                "altura": 178.0,
+                "idade": 22,
                 "sexo": "Masculino",
-                "atividade": "Sedentário",
+                "atividade": "Levemente Ativo",
+                "objetivo": "Cutting Leve"
             },
             "cardapio": [],
         }

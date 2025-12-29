@@ -32,39 +32,65 @@ def render_perfil():
         )
 
     col_atv, col_obj = st.columns(2)
+    lista_atividades = list(niveis_atividade.keys())
+    try:
+        index_atv = lista_atividades.index(st.session_state.dieta["perfil"]["atividade"])
+    except ValueError:
+        index_atv = 2
+
     with col_atv:
-        atividade = st.selectbox("Nível de Atividade", list(niveis_atividade.keys()))
+        atividade = st.selectbox(
+            "Nível de Atividade", 
+            options=lista_atividades,
+            index=index_atv
+        )
+
+    dict_objetivos = {
+        "Cutting Forte": -500,
+        "Cutting Leve": -350,
+        "Manutenção": 0,
+        "Bulking Limpo": 350,
+        "Bulking Sujo": 500
+    }
+    lista_objetivos = list(dict_objetivos.keys())
+        
+    objetivo_salvo = st.session_state.dieta["perfil"].get("objetivo", "Manutenção")
+    try:
+        index_obj = lista_objetivos.index(objetivo_salvo)
+    except ValueError:
+        index_obj = 2
+
     with col_obj:
         objetivo = st.selectbox(
             "Objetivo",
-            ["Perda de Peso (Cutting)", "Manutenção", "Ganho de Massa (Bulking)"],
+            options=lista_objetivos,
+            index=index_obj
         )
 
     if st.button("🚀 Calcular Metas Diárias", use_container_width=True):
         tmb = calcular_tmb(peso, altura, idade, sexo)
         get = calcular_get(tmb, atividade)
 
-        ajuste = -500 if "Perda" in objetivo else 300 if "Ganho" in objetivo else 0
+        ajuste = dict_objetivos.get(objetivo, 0)
         calorias_alvo = get + ajuste
 
-        # Atualiza State
-        st.session_state.dieta["perfil"].update(
-            {
-                "peso": peso,
-                "altura": altura,
-                "idade": idade,
-                "sexo": sexo,
-                "atividade": atividade,
-            }
-        )
+        st.session_state.dieta["perfil"].update({
+            "peso": peso,
+            "altura": altura,
+            "idade": idade,
+            "sexo": sexo,
+            "atividade": atividade,
+            "objetivo": objetivo 
+        })
+        
         st.session_state.dieta["macros_alvo"]["kcal"] = calorias_alvo
+
         st.session_state["calculo_realizado"] = {
             "tmb": tmb,
             "get": get,
             "alvo": calorias_alvo,
         }
 
-    # Exibição dos Cards (HTML/CSS)
     if "calculo_realizado" in st.session_state:
         res = st.session_state["calculo_realizado"]
         st.divider()
