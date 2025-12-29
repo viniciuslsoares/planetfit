@@ -116,7 +116,7 @@ def render_biblioteca(df_taco):
         edited_df = st.data_editor(
             df_custom, 
             num_rows="dynamic", 
-            uwidth='stretch',
+            width='stretch',
             key="editor_custom_foods"
         )
         
