@@ -52,12 +52,12 @@ def render_biblioteca(df_taco):
                 with col_bar:
                     st.progress(matches / total)
 
-                st.dataframe(resultado, use_container_width=True, hide_index=True)
+                st.dataframe(resultado, width='stretch', hide_index=True)
             else:
                 st.warning(f"Nenhum resultado para '{busca}'")
         else:
             st.caption("Amostra da base consolidada (100g):")
-            st.dataframe(df_total.head(5), use_container_width=True, hide_index=True)
+            st.dataframe(df_total.head(5), width='stretch', hide_index=True)
     else:
         st.info("Sua biblioteca está vazia. Adicione um alimento personalizado abaixo ou atualize a TACO.")
     
@@ -116,7 +116,7 @@ def render_biblioteca(df_taco):
         edited_df = st.data_editor(
             df_custom, 
             num_rows="dynamic", 
-            use_container_width=True,
+            uwidth='stretch',
             key="editor_custom_foods"
         )
         
