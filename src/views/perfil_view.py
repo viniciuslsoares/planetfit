@@ -13,7 +13,6 @@ def render_perfil():
         "Extremamente Ativo": {"desc": "Trabalho físico intenso ou atleta."},
     }
 
-    # Inputs (Usando o estado inicial do session_state)
     col_input1, col_input2 = st.columns(2)
     with col_input1:
         peso = st.number_input(

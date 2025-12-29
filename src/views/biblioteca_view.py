@@ -7,36 +7,41 @@ def render_biblioteca(df_taco):
 
     if df_taco is not None:
         st.subheader("🔍 Buscar Alimentos")
+
         busca = st.text_input(
-            "Digite o nome do alimento para filtrar:",
-            placeholder="Ex: Frango, Arroz, Ovo...",
+            "Digite o nome do alimento:",
+            placeholder="Comece a digitar (ex: Arroz)...",
+            key="busca_reativa",
         )
 
         if busca:
-            resultado = df_taco[
-                df_taco["alimento"].str.contains(busca, case=False, na=False)
-            ]
-            st.write(f"Encontrados {len(resultado)} resultados:")
-            st.dataframe(resultado, width="stretch")
+            mask = df_taco["alimento"].str.contains(busca, case=False, na=False)
+            resultado = df_taco[mask]
+
+            matches = len(resultado)
+            total = len(df_taco)
+
+            if matches > 0:
+                col_info, col_bar = st.columns([1, 4])
+                with col_info:
+                    st.write(f"**{matches}** matches")
+                with col_bar:
+                    st.progress(matches / total)
+
+                st.dataframe(resultado, use_container_width=True, hide_index=True)
+            else:
+                st.warning(f"Nenhum resultado para '{busca}'")
         else:
-            st.subheader("📊 Prévia da Base de Dados")
-            st.dataframe(df_taco.head(5), width="stretch")
-            st.caption(
-                "Mostrando os 10 primeiros itens. Use a busca acima para encontrar alimentos específicos."
-            )
+            st.caption("Amostra da base de dados:")
+            st.dataframe(df_taco.head(5), use_container_width=True, hide_index=True)
 
         st.divider()
 
         with st.expander("⚙️ Gerenciar Base de Dados"):
-            st.write(
-                "Se os dados estiverem desatualizados, você pode forçar um novo download."
-            )
             if st.button("🔄 Atualizar Tabela TACO"):
-                with st.spinner("Sincronizando com o servidor..."):
+                with st.spinner("Sincronizando..."):
                     if baixar_taco():
-                        st.success("Dados atualizados! Reiniciando aplicação...")
+                        st.success("Dados atualizados!")
                         st.rerun()
     else:
-        st.error(
-            "Não foi possível carregar a base de dados. Verifique sua conexão e tente atualizar."
-        )
+        st.error("Base de dados não carregada.")
