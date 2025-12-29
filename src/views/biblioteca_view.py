@@ -5,6 +5,21 @@ from src.services.data_service import baixar_taco, carregar_custom_foods, salvar
 
 def render_biblioteca(df_taco):
     
+    df_custom = carregar_custom_foods()
+    
+    if df_taco is not None:
+        df_taco_copy = df_taco.copy()
+        df_taco_copy['fonte'] = "TACO"
+        
+        df_custom_copy = df_custom.copy()
+        df_custom_copy['fonte'] = "Personalizado"
+        
+        # Consolidação
+        df_total = pd.concat([df_taco_copy, df_custom_copy], ignore_index=True)
+    else:
+        df_total = df_custom
+    
+    
     col_titulo, col_btn = st.columns([0.9, 0.1])
     
     with col_titulo:
@@ -14,21 +29,21 @@ def render_biblioteca(df_taco):
         if st.button("⚙️", help="Atualizar Base de Dados"):
             st.session_state.show_config = not st.session_state.get('show_config', False)
 
-    if df_taco is not None:
+    if df_total is not None and not df_total.empty:        
         st.subheader("🔍 Buscar Alimentos")
-
         busca = st.text_input(
             "Digite o nome do alimento:",
-            placeholder="Comece a digitar (ex: Arroz)...",
+            placeholder="Pesquise na TACO ou nos seus personalizados...",
             key="busca_reativa",
+            label_visibility="collapsed"
         )
 
         if busca:
-            mask = df_taco["alimento"].str.contains(busca, case=False, na=False)
-            resultado = df_taco[mask]
-
+            mask = df_total["alimento"].str.contains(busca, case=False, na=False)
+            resultado = df_total[mask]
+            
             matches = len(resultado)
-            total = len(df_taco)
+            total = len(df_total)
 
             if matches > 0:
                 col_info, col_bar = st.columns([1, 4])
@@ -41,15 +56,12 @@ def render_biblioteca(df_taco):
             else:
                 st.warning(f"Nenhum resultado para '{busca}'")
         else:
-            st.caption("Amostra da base de dados:")
-            st.dataframe(df_taco.head(5), use_container_width=True, hide_index=True)
-
-
+            st.caption("Amostra da base consolidada (100g):")
+            st.dataframe(df_total.head(5), use_container_width=True, hide_index=True)
     else:
-        st.error("Base de dados não carregada.")
+        st.info("Sua biblioteca está vazia. Adicione um alimento personalizado abaixo ou atualize a TACO.")
     
     st.divider()
-    
     
     st.header("➕ Meus Alimentos Customizados")
     
@@ -77,7 +89,6 @@ def render_biblioteca(df_taco):
             ferro_raw = st.number_input("Ferro (mg)", min_value=0.0)
 
             if st.form_submit_button("💾 Salvar e Converter para 100g"):
-                # Lógica de Normalização para 100g
                 fator = 100 / peso_referencia
                 
                 novo_item = pd.DataFrame([{
