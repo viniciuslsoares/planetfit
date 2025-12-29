@@ -26,16 +26,16 @@ def calcular_get(tmb, nivel_atividade):
 def calcular_macros_por_gkg(peso, kcal_alvo, g_kg_prot, g_kg_fat):
     g_prot = peso * g_kg_prot
     g_fat = peso * g_kg_fat
-    
+
     kcal_prot = g_prot * 4
     kcal_fat = g_fat * 9
-    
+
     kcal_carb = kcal_alvo - (kcal_prot + kcal_fat)
-    
+
     g_carb = max(0, kcal_carb / 4)
-    
+
     return {
         "proteina": {"g": g_prot, "kcal": kcal_prot},
         "gordura": {"g": g_fat, "kcal": kcal_fat},
-        "carboidrato": {"g": g_carb, "kcal": max(0, kcal_carb)}
+        "carboidrato": {"g": g_carb, "kcal": max(0, kcal_carb)},
     }
