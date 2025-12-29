@@ -27,16 +27,40 @@ def baixar_taco():
         st.error(f"❌ Erro ao baixar a tabela TACO: {e}")
 
 
+def limpar_tabela(df):
+    """Aplica as regras de negócio para limpar a tabela TACO."""
+    
+    # 1. Mapeamento de colunas (De -> Para)
+    colunas_foco = {
+        "Descrição dos alimentos": "alimento",
+        "Energia..kcal.": "kcal",
+        "Proteína..g.": "prot",
+        "Lipídeos..g.": "gord",
+        "Carboidrato..g.": "carb",
+        "Fibra.Alimentar..g.": "fibra",
+        "Colesterol..mg.": "colesterol",
+        "Sódio..mg.": "sodio",
+        "Ferro..mg.": "ferro"
+    }
+    
+    df = df[list(colunas_foco.keys())].copy()
+    
+    df = df.rename(columns=colunas_foco)
+    
+    df['alimento'] = df['alimento'].str.replace(',', ' ', regex=False).str.replace(r'\s+', ' ', regex=True).str.strip()
+    
+    for col in ["kcal", "prot", "gord", "carb", "fibra", "colesterol", "sodio", "ferro"]:
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+    
+    return df
+
 @st.cache_data
 def carregar_dados() -> pd.DataFrame | None:
-    """Carrega os dados locais da tabela TACO."""
+    """Lê, limpa e retorna os dados."""
     if not os.path.exists(PATH_TACO):
         st.warning("⚠️ Arquivo da TACO não encontrado. Faça o download primeiro.")
         return None
-
-    return pd.read_csv(
-        PATH_TACO,
-        sep=",",
-        na_values=["NA"],
-        encoding="utf-8"
-    )
+    else:
+        df_bruto = pd.read_csv(PATH_TACO)
+        df_limpo = limpar_tabela(df_bruto)
+        return df_limpo
