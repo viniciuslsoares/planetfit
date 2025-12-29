@@ -1,0 +1,24 @@
+name: Python Linting (Black)
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Instalar Black
+      run: pip install black
+
+    - name: Verificar formatação com Black
+      # O flag --check faz o job falhar se o código não estiver formatado
+      # O flag --diff mostra exatamente o que precisa ser mudado
+      run: black . --check 
