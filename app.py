@@ -28,7 +28,7 @@ def main():
         if df_taco is not None:
             st.subheader("📊 Prévia da Base de Dados")
             # Exibindo as 3 primeiras linhas como solicitado
-            st.dataframe(df_taco.head(3), width='content')
+            st.dataframe(df_taco.head(3), width='stretch')
             st.toast("Tabela carregada!", icon="✅")
         else:
             st.error("Base de dados ausente.")
