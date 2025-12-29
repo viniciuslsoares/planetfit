@@ -29,7 +29,7 @@ def baixar_taco():
 
 def limpar_tabela(df):
     """Aplica as regras de negócio para limpar a tabela TACO."""
-    
+
     # 1. Mapeamento de colunas (De -> Para)
     colunas_foco = {
         "Descrição dos alimentos": "alimento",
@@ -40,19 +40,34 @@ def limpar_tabela(df):
         "Fibra.Alimentar..g.": "fibra",
         "Colesterol..mg.": "colesterol",
         "Sódio..mg.": "sodio",
-        "Ferro..mg.": "ferro"
+        "Ferro..mg.": "ferro",
     }
-    
+
     df = df[list(colunas_foco.keys())].copy()
-    
+
     df = df.rename(columns=colunas_foco)
-    
-    df['alimento'] = df['alimento'].str.replace(',', ' ', regex=False).str.replace(r'\s+', ' ', regex=True).str.strip()
-    
-    for col in ["kcal", "prot", "gord", "carb", "fibra", "colesterol", "sodio", "ferro"]:
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    
+
+    df["alimento"] = (
+        df["alimento"]
+        .str.replace(",", " ", regex=False)
+        .str.replace(r"\s+", " ", regex=True)
+        .str.strip()
+    )
+
+    for col in [
+        "kcal",
+        "prot",
+        "gord",
+        "carb",
+        "fibra",
+        "colesterol",
+        "sodio",
+        "ferro",
+    ]:
+        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+
     return df
+
 
 @st.cache_data
 def carregar_dados() -> pd.DataFrame | None:

@@ -21,4 +21,4 @@ jobs:
     - name: Verificar formatação com Black
       # O flag --check faz o job falhar se o código não estiver formatado
       # O flag --diff mostra exatamente o que precisa ser mudado
-      run: black . --check --diff
+      run: black . --check 
