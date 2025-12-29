@@ -67,7 +67,7 @@ def render_perfil():
     with col_obj:
         objetivo = st.selectbox("Objetivo", options=lista_objetivos, index=index_obj)
 
-    if st.button("🚀 Calcular Metas Diárias", width='stretch'):
+    if st.button("🚀 Calcular Metas Diárias", width="stretch"):
         tmb = calcular_tmb(peso, altura, idade, sexo)
         get = calcular_get(tmb, atividade)
 

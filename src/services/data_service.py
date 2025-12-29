@@ -86,7 +86,19 @@ def carregar_custom_foods():
     if os.path.exists(PATH_CUSTOM):
         return pd.read_csv(PATH_CUSTOM)
     # Se não existir, retorna um DataFrame vazio com as colunas corretas
-    return pd.DataFrame(columns=["alimento", "kcal", "prot", "lip", "carb", "fibra", "colesterol", "sodio", "ferro"])
+    return pd.DataFrame(
+        columns=[
+            "alimento",
+            "kcal",
+            "prot",
+            "lip",
+            "carb",
+            "fibra",
+            "colesterol",
+            "sodio",
+            "ferro",
+        ]
+    )
 
 
 def salvar_custom_foods(df):
