@@ -110,7 +110,20 @@ def salvar_custom_foods(df):
 def carregar_receitas():
     if os.path.exists(PATH_RECIPES):
         return pd.read_csv(PATH_RECIPES)
-    return pd.DataFrame(columns=["alimento", "kcal", "prot", "gord", "carb", "fibra", "colesterol", "sodio", "ferro", "fonte"])
+    return pd.DataFrame(
+        columns=[
+            "alimento",
+            "kcal",
+            "prot",
+            "gord",
+            "carb",
+            "fibra",
+            "colesterol",
+            "sodio",
+            "ferro",
+            "fonte",
+        ]
+    )
 
 
 def salvar_receita(nova_receita_df):

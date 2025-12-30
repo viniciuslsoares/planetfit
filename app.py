@@ -8,6 +8,7 @@ from src.views.biblioteca_view import render_biblioteca
 from src.views.cardapio_view import render_cardapio
 from src.views.receitas_view import render_receitas
 
+
 def main():
     st.set_page_config(page_title="NutriStream", layout="wide", page_icon="🥗")
 
@@ -31,12 +32,13 @@ def main():
 
     with tab_receitas:
         render_receitas(df_taco)
-        
+
     with tab_biblioteca:
         render_biblioteca(df_taco)
 
     with tab_cardapio:
         render_cardapio()
+
 
 if __name__ == "__main__":
     main()
