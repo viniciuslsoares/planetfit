@@ -4,6 +4,7 @@ from src.services.nutri_calculos import (
     calcular_get,
     calcular_macros_por_gkg,
 )
+from src.controllers.user_controller import UserController
 
 
 def render_perfil():
@@ -67,31 +68,38 @@ def render_perfil():
     with col_obj:
         objetivo = st.selectbox("Objetivo", options=lista_objetivos, index=index_obj)
 
-    if st.button("🚀 Calcular Metas Diárias", width="stretch"):
+    if st.button("🚀 Calcular e Salvar Metas", use_container_width=True):
         tmb = calcular_tmb(peso, altura, idade, sexo)
         get = calcular_get(tmb, atividade)
 
         ajuste = dict_objetivos.get(objetivo, 0)
         calorias_alvo = get + ajuste
 
-        st.session_state.dieta["perfil"].update(
-            {
-                "peso": peso,
-                "altura": altura,
-                "idade": idade,
-                "sexo": sexo,
-                "atividade": atividade,
-                "objetivo": objetivo,
-            }
-        )
-
-        st.session_state.dieta["macros_alvo"]["kcal"] = calorias_alvo
-
-        st.session_state["calculo_realizado"] = {
-            "tmb": tmb,
-            "get": get,
-            "alvo": calorias_alvo,
+        dados_perfil = {
+            "peso": peso,
+            "altura": altura,
+            "idade": idade,
+            "sexo": sexo,
+            "atividade": atividade,
+            "objetivo": objetivo,
         }
+
+        sucesso = UserController.update_profile_and_save(dados_perfil, calorias_alvo)
+
+        if sucesso:
+            st.session_state["calculo_realizado"] = {
+                "tmb": tmb,
+                "get": get,
+                "alvo": calorias_alvo,
+            }
+            st.success(
+                f"Perfil de {st.session_state.usuario_ativo} atualizado com sucesso!"
+            )
+            st.rerun()
+        else:
+            st.error(
+                "Erro: Você precisa estar logado em um perfil para salvar as metas."
+            )
 
     if "calculo_realizado" in st.session_state:
         res = st.session_state["calculo_realizado"]
