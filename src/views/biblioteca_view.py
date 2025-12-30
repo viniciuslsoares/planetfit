@@ -1,15 +1,16 @@
 import streamlit as st
 import pandas as pd
 from src.services.data_service import (
-    baixar_taco,
     carregar_custom_foods,
     salvar_custom_foods,
+    carregar_receitas,
 )
 
 
 def render_biblioteca(df_taco):
 
     df_custom = carregar_custom_foods()
+    df_recipes = carregar_receitas()
 
     if df_taco is not None:
         df_taco_copy = df_taco.copy()
@@ -17,9 +18,12 @@ def render_biblioteca(df_taco):
 
         df_custom_copy = df_custom.copy()
         df_custom_copy["fonte"] = "Personalizado"
+        
+        df_recipes_copy = df_recipes.copy()
+        df_recipes_copy["fonte"] = "Receitas"        
 
         # Consolidação
-        df_total = pd.concat([df_taco_copy, df_custom_copy], ignore_index=True)
+        df_total = pd.concat([df_taco_copy, df_custom_copy, df_recipes_copy], ignore_index=True)
     else:
         df_total = df_custom
 
@@ -140,3 +144,4 @@ def render_biblioteca(df_taco):
             st.toast("Alterações salvas com sucesso!", icon="💾")
     else:
         st.info("Você ainda não possui alimentos cadastrados manualmente.")
+        

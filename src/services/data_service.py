@@ -8,6 +8,7 @@ URL_TACO = "https://raw.githubusercontent.com/machine-learning-mocha/taco/main/f
 DATA_DIR = "data"
 PATH_TACO = os.path.join(DATA_DIR, "taco.csv")
 PATH_CUSTOM = "data/custom_foods.csv"
+PATH_RECIPES = "data/recipes.csv"
 
 
 def baixar_taco():
@@ -91,7 +92,7 @@ def carregar_custom_foods():
             "alimento",
             "kcal",
             "prot",
-            "lip",
+            "gord",
             "carb",
             "fibra",
             "colesterol",
@@ -104,3 +105,15 @@ def carregar_custom_foods():
 def salvar_custom_foods(df):
     os.makedirs("data", exist_ok=True)
     df.to_csv(PATH_CUSTOM, index=False)
+
+
+def carregar_receitas():
+    if os.path.exists(PATH_RECIPES):
+        return pd.read_csv(PATH_RECIPES)
+    return pd.DataFrame(columns=["alimento", "kcal", "prot", "gord", "carb", "fibra", "colesterol", "sodio", "ferro", "fonte"])
+
+
+def salvar_receita(nova_receita_df):
+    df_existente = carregar_receitas()
+    df_updated = pd.concat([df_existente, nova_receita_df], ignore_index=True)
+    df_updated.to_csv(PATH_RECIPES, index=False)

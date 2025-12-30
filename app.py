@@ -6,7 +6,7 @@ from src.services.state_service import init_session_state
 from src.views.perfil_view import render_perfil
 from src.views.biblioteca_view import render_biblioteca
 from src.views.cardapio_view import render_cardapio
-
+from src.views.receitas_view import render_receitas
 
 def main():
     st.set_page_config(page_title="NutriStream", layout="wide", page_icon="🥗")
@@ -22,19 +22,21 @@ def main():
     st.title("🥗 NutriStream")
     st.caption("Planejador de Dieta Inteligente - Base TACO")
 
-    tab_metas, tab_biblioteca, tab_cardapio = st.tabs(
-        ["🎯 Perfil & Metas", "🍎 Biblioteca TACO & Receitas", "📝 Meu Cardápio"]
+    tab_metas, tab_receitas, tab_biblioteca, tab_cardapio = st.tabs(
+        ["🎯 Perfil & Metas", "👨‍🍳Receitas", "🍎 Biblioteca", "📝 Meu Cardápio"]
     )
 
     with tab_metas:
         render_perfil()
 
+    with tab_receitas:
+        render_receitas(df_taco)
+        
     with tab_biblioteca:
         render_biblioteca(df_taco)
 
     with tab_cardapio:
         render_cardapio()
-
 
 if __name__ == "__main__":
     main()
