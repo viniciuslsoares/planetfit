@@ -140,3 +140,47 @@ class CardapioController:
         }
 
         return g_p, g_c, round(g_v, 0), totais
+
+
+    @staticmethod
+    def calcular_distribuicao_dinamica():
+        """
+        Calcula as metas garantindo que Almoço/Jantar absorvam o saldo remanescente.
+        """
+        metas_globais = st.session_state.dieta["macros_alvo"]
+        # Percentuais reguláveis (exemplo vindo do state ou default)
+        dist = st.session_state.dieta.get("distribuicao_percentual", {"cafe": 0.2, "lanches": 0.15})
+        
+        # 1. Café da Manhã
+        meta_cafe = {k: v * dist["cafe"] for k, v in metas_globais.items() if isinstance(v, (int, float))}
+        
+        # 2. Lanches (considerando 2 lanches como exemplo)
+        meta_lanche = {k: v * dist["lanches"] for k, v in metas_globais.items() if isinstance(v, (int, float))}
+        
+        # 3. Almoço/Jantar (Ajuste Fino - Divide o que sobrou por 2)
+        sobra_fator = (1.0 - dist["cafe"] - (dist["lanches"] * 2)) / 2
+        meta_principal = {k: v * sobra_fator for k, v in metas_globais.items() if isinstance(v, (int, float))}
+        
+        return {
+            "Café da Manhã": meta_cafe,
+            "Lanche": meta_lanche,
+            "Almoço/Jantar": meta_principal
+        }
+        
+        
+    @staticmethod
+    def formatar_qtd(alimento_row, gramas):
+        """Converte gramas para unidades caseiras se disponível."""
+        unid = alimento_row.get("unidade_medida")
+        peso_un = alimento_row.get("peso_unidade")
+        
+        if unid and peso_un and peso_un > 0:
+            qtd_un = gramas / peso_un
+            qtd_label = int(qtd_un) if qtd_un % 1 == 0 else round(qtd_un, 1)
+            return f"{qtd_label} {unid}(s) ({gramas:.0f}g)"
+        return f"{gramas:.0f}g"
+        
+        
+       
+        
+        

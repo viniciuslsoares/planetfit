@@ -85,19 +85,16 @@ def carregar_dados() -> pd.DataFrame | None:
 
 def carregar_custom_foods():
     if os.path.exists(PATH_CUSTOM):
-        return pd.read_csv(PATH_CUSTOM)
-    # Se não existir, retorna um DataFrame vazio com as colunas corretas
+        df = pd.read_csv(PATH_CUSTOM)
+        for col in ["unidade_medida", "peso_unidade"]:
+            if col not in df.columns:
+                df[col] = None if col == "unidade_medida" else 0.0
+        return df
+    
     return pd.DataFrame(
         columns=[
-            "alimento",
-            "kcal",
-            "prot",
-            "gord",
-            "carb",
-            "fibra",
-            "colesterol",
-            "sodio",
-            "ferro",
+            "alimento", "kcal", "prot", "gord", "carb", "fibra", 
+            "colesterol", "sodio", "ferro", "unidade_medida", "peso_unidade"
         ]
     )
 
