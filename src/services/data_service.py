@@ -90,11 +90,20 @@ def carregar_custom_foods():
             if col not in df.columns:
                 df[col] = None if col == "unidade_medida" else 0.0
         return df
-    
+
     return pd.DataFrame(
         columns=[
-            "alimento", "kcal", "prot", "gord", "carb", "fibra", 
-            "colesterol", "sodio", "ferro", "unidade_medida", "peso_unidade"
+            "alimento",
+            "kcal",
+            "prot",
+            "gord",
+            "carb",
+            "fibra",
+            "colesterol",
+            "sodio",
+            "ferro",
+            "unidade_medida",
+            "peso_unidade",
         ]
     )
 

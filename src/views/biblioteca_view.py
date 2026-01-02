@@ -92,11 +92,13 @@ def render_biblioteca(df_taco):
                 value=100.0,
                 help="Qual o peso que os macros abaixo representam?",
             )
-            
+
             st.write("---")
             st.caption("📏 Unidade Caseira (Ex: 1 Fatia de pão = 25g)")
             col_u1, col_u2 = st.columns(2)
-            u_nome = col_u1.text_input("Nome da Unidade", placeholder="Fatia, Ovo, Pote...")
+            u_nome = col_u1.text_input(
+                "Nome da Unidade", placeholder="Fatia, Ovo, Pote..."
+            )
             u_peso = col_u2.number_input("Peso de 1 unidade (g)", min_value=0.0)
 
             st.write("---")
@@ -130,7 +132,7 @@ def render_biblioteca(df_taco):
                             "sodio": sod_raw * fator,
                             "ferro": ferro_raw * fator,
                             "unidade_medida": u_nome if u_nome else None,
-                            "peso_unidade": u_peso if u_peso > 0 else 0.0
+                            "peso_unidade": u_peso if u_peso > 0 else 0.0,
                         }
                     ]
                 )
